@@ -22,3 +22,6 @@ require 'braspag-rest/refund'
 require 'braspag-rest/payment'
 require 'braspag-rest/sale'
 require 'braspag-rest/address'
+require 'braspag-rest/protected_card'
+require 'braspag-rest/protected_card_request'
+

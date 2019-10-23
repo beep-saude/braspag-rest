@@ -37,6 +37,18 @@ module BraspagRest
       config.fetch('request_timeout', 60)
     end
 
+    def protected_card_url
+      config['protected_card_url']
+    end
+    
+    def client_id
+      config['client_id']
+    end
+
+    def client_secret
+      config['client_secret']
+    end
+
     private
 
     def config
