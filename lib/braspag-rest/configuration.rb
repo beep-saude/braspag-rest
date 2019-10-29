@@ -40,6 +40,10 @@ module BraspagRest
     def protected_card_url
       config['protected_card_url']
     end
+
+    def protected_card_auth_url
+      config['protected_card_auth_url']
+    end
     
     def client_id
       config['client_id']

@@ -139,5 +139,4 @@ describe BraspagRest::ProtectedCard do
       end
     end 
   end 
-
 end

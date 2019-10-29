@@ -22,7 +22,16 @@ module BraspagRest
     private 
 
     def save_card(access_token)
-      response = BraspagRest::ProtectedCardRequest.save_card(access_token, self.inverse_attributes)
+      attributes = {
+        'Alias': self.alias, 
+        'Card': {
+          'Number': self.card.number,
+          'Holder': self.card.holder, 
+          'ExpirationDate': self.card.expiration_date,
+          'SecurityCode': self.card.security_code
+        }
+      }
+      response = BraspagRest::ProtectedCardRequest.save_card(access_token, attributes)
       if response.success?
         card_data = response.parsed_body['Card']
         self.card.number = card_data['Number']
