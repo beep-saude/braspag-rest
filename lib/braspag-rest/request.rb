@@ -8,7 +8,7 @@ module BraspagRest
       def authorize(request_id, params)
         config.logger.info("[BraspagRest][Authorize] endpoint: #{sale_url}, params: #{params.to_json}") if config.log_enabled?
 
-        execute_braspag_request do
+        BraspagRequest.execute_braspag_request do
           RestClient::Request.execute(
             method: :post,
             url: sale_url,
@@ -22,7 +22,7 @@ module BraspagRest
       def void(request_id, payment_id, amount)
         config.logger.info("[BraspagRest][Void] endpoint: #{void_url(payment_id, amount)}") if config.log_enabled?
 
-        execute_braspag_request do
+        BraspagRequest.execute_braspag_request do
           RestClient::Request.execute(
             method: :put,
             url: void_url(payment_id, amount),
@@ -35,7 +35,7 @@ module BraspagRest
       def get_sale(request_id, payment_id)
         config.logger.info("[BraspagRest][GetSale] endpoint: #{search_sale_url(payment_id)}") if config.log_enabled?
 
-        execute_braspag_request do
+        BraspagRequest.execute_braspag_request do
           RestClient::Request.execute(
             method: :get,
             url: search_sale_url(payment_id),
@@ -48,7 +48,7 @@ module BraspagRest
       def get_sales_for_merchant_order_id(request_id, merchant_order_id)
         config.logger.info("[BraspagRest][GetSale] endpoint: #{search_sales_for_merchant_order_id_url(merchant_order_id)}") if config.log_enabled?
 
-        execute_braspag_request do
+        BraspagRequest.execute_braspag_request do
           RestClient::Request.execute(
             method: :get,
             url: search_sales_for_merchant_order_id_url(merchant_order_id),
@@ -61,7 +61,7 @@ module BraspagRest
       def capture(request_id, payment_id, amount)
         config.logger.info("[BraspagRest][Capture] endpoint: #{capture_url(payment_id)}, amount: #{amount}") if config.log_enabled?
 
-        execute_braspag_request do
+        BraspagRequest.execute_braspag_request do
           RestClient::Request.execute(
             method: :put,
             url: capture_url(payment_id),
@@ -73,28 +73,6 @@ module BraspagRest
       end
 
       private
-
-      def execute_braspag_request(&block)
-        gateway_response = block.call
-
-        BraspagRest::Response.new(gateway_response).tap do |response|
-          config.logger.info("[BraspagRest][Response] gateway_response: #{response.parsed_body}") if config.log_enabled?
-        end
-      rescue RestClient::ResourceNotFound => e
-        # Explicitly message due to Rest Client RestClient::NotFound normalization:
-        # https://github.com/rest-client/rest-client/blob/v2.0.0/lib/restclient/exceptions.rb#L90
-        config.logger.error("[BraspagRest][Error] message: Resource Not Found, status: #{e.http_code}, body: #{e.http_body.inspect}") if config.log_enabled?
-        raise
-      rescue RestClient::RequestTimeout => e
-        config.logger.error("[BraspagRest][Timeout] message: #{e.message}") if config.log_enabled?
-        raise
-      rescue RestClient::ExceptionWithResponse => e
-        config.logger.warn("[BraspagRest][Error] message: #{e.message}, status: #{e.http_code}, body: #{e.http_body.inspect}") if config.log_enabled?
-        BraspagRest::Response.new(e.response)
-      rescue RestClient::Exception => e
-        config.logger.error("[BraspagRest][Error] message: #{e.message}, status: #{e.http_code}, body: #{e.http_body.inspect}") if config.log_enabled?
-        raise
-      end
 
       def sale_url
         config.url + SALE_ENDPOINT
@@ -129,7 +107,7 @@ module BraspagRest
       end
 
       def config
-        @config ||= BraspagRest.config
+        BraspagRequest.config
       end
     end
   end
