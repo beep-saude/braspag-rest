@@ -33,12 +33,7 @@ module BraspagRest
       }
       response = BraspagRest::ProtectedCardRequest.save_card(access_token, attributes)
       if response.success?
-        card_data = response.parsed_body['Card']
-        self.card.number = card_data['Number']
-        self.card.token  = response.parsed_body['TokenReference']
-        self.card.expiration_date = card_data['ExpirationDate']
-        self.card.holder = card_data['Holder']
-        self.card.security_code = card_data['SecurityCode']
+        map_to_card(response.parsed_body)
         return true
       else
         initialize_errors(response.parsed_body) and return false
@@ -46,7 +41,18 @@ module BraspagRest
     end
 
     def initialize_errors(errors)
-      @errors = errors.map { |error| { code: error['Code'], message: error['Message'] } }
+      @errors = errors.map { |error| { code: error.dig('Code'), message: error.dig('Message') } }
+    end
+
+    private 
+
+    def map_to_card(response_body)
+      card_data = response_body['Card']
+      self.card.number = card_data['Number']
+      self.card.token  = response_body['TokenReference']
+      self.card.expiration_date = card_data['ExpirationDate']
+      self.card.holder = card_data['Holder']
+      self.card.security_code = card_data['SecurityCode']
     end
   end
 end
