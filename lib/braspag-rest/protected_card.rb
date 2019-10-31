@@ -19,6 +19,13 @@ module BraspagRest
       end
     end
 
+    def error_messages
+      messages = @errors.map do |error|
+        message = "#{error['Code']} - #{error['Message']}"
+      end
+      messages.join(" | ")
+    end
+
     private 
 
     def save_card(access_token)
