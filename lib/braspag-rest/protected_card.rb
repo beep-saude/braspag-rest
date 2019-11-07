@@ -48,6 +48,7 @@ module BraspagRest
     end
 
     def initialize_errors(errors)
+      errors = errors.include?('Errors') ? errors['Errors'] : errors
       @errors = errors.map { |error| { code: error.dig('Code'), message: error.dig('Message') } }
     end
 
