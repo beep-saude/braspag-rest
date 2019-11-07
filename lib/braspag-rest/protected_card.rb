@@ -21,7 +21,7 @@ module BraspagRest
 
     def error_messages
       messages = @errors.map do |error|
-        "#{error['Code']} - #{error['Message']}"
+        "#{error[:code]} - #{error[:message]}"
       end
       messages.join(" | ")
     end
