@@ -75,7 +75,7 @@ module BraspagRest
     end
 
     def partial_refunded?
-      status.to_i.eql?(STATUS_CONFIRMED)
+      status.to_i.eql?(STATUS_CONFIRMED) && voided_amount.present?
     end
   end
 end
